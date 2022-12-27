@@ -66,19 +66,22 @@ pstrijcpy:
         pushq   %r14                #save value on the stack to use later
         pushq   %r15                #save value on the stack to use later
         movq    %rdi, %rbx          #rbx= &dst pstring
-        movzbq  (%rdi), %r10        #r10= size field value of dst pstring
-        movzbq  (%rsi), %r13        #r13= size field value of src pstring
+        movzbq  (%rdi), %r10        #r10= size field value of dst pstring- len dest
+        movzbq  (%rsi), %r13        #r13= size field value of src pstring- len src
         movzbq  %dl, %r12           #r12= i
         movzbq  %cl, %r15           #r13= j
         movq    $0, %r14
         cmpq     %r14, %r12         #check if i is smaller than 0
         jl      .invalidInput
-        cmpq    %r10, %r15          #check if j bigger than size value of dst pstring
-        jg      .invalidInput
-        cmpq    %r13, %r15          #check if j bigger than size value of src pstring
-        jg      .invalidInput
         cmp     %r12,%r15           #check if i > j
         jl      .invalidInput
+
+
+        cmpq    %r10, %r15          #check if j bigger than len dst
+        jge      .invalidInput
+        cmpq    %r13, %r15          #check if j bigger than len src
+        jge      .invalidInput
+
         jmp     .copySubString      #when reached here, all edge cases are covered, so do copy
 
 .copySubString:
@@ -206,12 +209,14 @@ pstrijcmp:
         movq    $0, %r9             #r9= 0
         cmpq     %r14, %r12         #check if i is smaller than 0
         jl      .invalidCmpInput
-        cmpq    %r10, %r15          #check if j bigger than size value of pstring1
-        jg      .invalidCmpInput
-        cmpq    %r11, %r15          #check if j bigger than size value of pstring2
-        jg      .invalidCmpInput
         cmp     %r12,%r15           #check if i > j
         jl      .invalidCmpInput
+
+        cmpq    %r10, %r15          #check if j bigger than size value of pstring1
+        jge      .invalidCmpInput
+        cmpq    %r11, %r15          #check if j bigger than size value of pstring2
+        jge      .invalidCmpInput
+
         jmp     .compareStrings     #when reached here, all edge cases are covered, so do compare
 
 .invalidCmpInput:

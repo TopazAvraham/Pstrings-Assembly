@@ -1,18 +1,24 @@
 #Topaz Avraham 206842627
 
 .section .rodata
-printCase31:        .string	"first pstring length: %d, second pstring length: %d\n"
-printCase32Case33:   .string	"old char: %c, new char: %c, first string: %s, second string: %s\n"
-printCase35:      .string	"length: %d, string: %s\n"
-printCase36:      .string	"length: %d, string: %s\n"
-printCase37:      .string	"compare result: %d\n"
-printCaseDefault:            .string	"invalid option!\n"
+scanfString:       .string      "%s"
 scanfInt:       .string      "%d"
 scanfChar:      .string      "%c"
-scanfString:       .string      "%s"
+
+printCaseDefault:            .string	"invalid option!\n"
+
+printCase31:              .string	"first pstring length: %d, second pstring length: %d\n"
+printCase32Case33:   .string	"old char: %c, new char: %c, first string: %s, second string: %s\n"
+
+printCase35:              .string	"length: %d, string: %s\n"
+printCase37:              .string	"compare result: %d\n"
+printCase36:              .string	"length: %d, string: %s\n"
+
+
 
     .align 8
 .switchCase:
+
 .quad .CaseDefault
 .quad .Case31
 .quad .Case32
@@ -21,6 +27,7 @@ scanfString:       .string      "%s"
 .quad .Case35
 .quad .Case36
 .quad .Case37
+
 
 .text
 .globl	run_func
@@ -76,27 +83,27 @@ run_func:
         call    scanf
 
         movq    $0, %rax            #to indicate scanf was successfull
-        movq    $scanfString, %rdi  #send as first parameter to scanf the string itself
         leaq    4(%rsp), %rsi       #send as second parameter to scanf the address to save input in
+        movq    $scanfString, %rdi  #send as first parameter to scanf the string itself
         call    scanf
 
-        movq    %r12, %rdi          #address of pstring1 as first parameter to replaceChar
-        movq    (%rsp), %rsi        #send as second parameter to replaceChar the old char
         movq    4(%rsp), %rdx       #send as third parameter to replaceChar the new char
+        movq    (%rsp), %rsi        #send as second parameter to replaceChar the old char
+        movq    %r12, %rdi          #address of pstring1 as first parameter to replaceChar
         call    replaceChar
         movq    %rax, %r12          #r12= &pstring1 after swaps
 
-        movq    %r13, %rdi          #address of pstring2 as first parameter to replaceChar
-        movq    (%rsp), %rsi        #send as second parameter to replaceChar the old char
         movq    4(%rsp), %rdx       #send as third parameter to replaceChar the new char
+        movq    (%rsp), %rsi        #send as second parameter to replaceChar the old char
+        movq    %r13, %rdi          #address of pstring2 as first parameter to replaceChar
         call    replaceChar
         movq    %rax, %r13          #r13= &pstring2 after swaps
 
-        movq    $printCase32Case33, %rdi    #send the string as first parameter to printf
-        movzbq    (%rsp), %rsi      #send as second parameter to printf the old char
-        movzbq    4(%rsp), %rdx     #send as third parameter to printf the old char
-        leaq    1(%r12), %rcx       #send as forth parameter to printf the address of the string of pstring1
         leaq    1(%r13), %r8        #send as fifth parameter to printf the address of the string of pstring2
+        leaq    1(%r12), %rcx       #send as forth parameter to printf the address of the string of pstring1
+        movzbq    4(%rsp), %rdx     #send as third parameter to printf the old char
+        movzbq    (%rsp), %rsi      #send as second parameter to printf the old char
+        movq    $printCase32Case33, %rdi    #send the string as first parameter to printf
         call    printf
         movq    $0, %rax            #to indicate printf was successfull
         addq    $8, %rsp            #release the memory allocated on the stack for this case
@@ -113,11 +120,11 @@ run_func:
         movq    $scanfInt, %rdi     #send as first parameter to scanf the string itself
         leaq    4(%rsp), %rsi       #send as second parameter to scanf the address to save input in
         call    scanf
-
-        movq    %r12, %rdi          #send &pstring1 as first parameter to pstrijcpy
-        movq    %r13, %rsi          #send &pstring2 as first parameter to pstrijcpy
-        movzbq  (%rsp), %rdx        #send i as third parameter to pstrijcpy
+	
         movzbq  4(%rsp), %rcx       #send j as third parameter to pstrijcpy
+        movzbq  (%rsp), %rdx        #send i as third parameter to pstrijcpy
+        movq    %r13, %rsi          #send &pstring2 as first parameter to pstrijcpy
+        movq    %r12, %rdi          #send &pstring1 as first parameter to pstrijcpy
         call    pstrijcpy
 
         movq    %rax, %r12          #r12= the return from pstrijcpy which is &pstring1
@@ -169,14 +176,14 @@ run_func:
         call    scanf
 
         movq    $0, %rax            #before calling scanf
-        movq    $scanfInt, %rdi     #send as first parameter to scanf the string itself
         leaq    4(%rsp), %rsi       #send as second parameter to scanf the address to save input in
+        movq    $scanfInt, %rdi     #send as first parameter to scanf the string itself
         call    scanf
 
-        movq    %r12, %rdi          #send &pstring1 as first parameter to pstrijcmp
-        movq    %r13, %rsi          #send &pstring2 as second parameter to pstrijcmp
-        movzbq  (%rsp), %rdx        #send i as third parameter to pstrijcmp
         movzbq  4(%rsp), %rcx       #send i as forth parameter to pstrijcmp
+        movzbq  (%rsp), %rdx        #send i as third parameter to pstrijcmp
+        movq    %r13, %rsi          #send &pstring2 as second parameter to pstrijcmp
+        movq    %r12, %rdi          #send &pstring1 as first parameter to pstrijcmp
         call    pstrijcmp
 
 
